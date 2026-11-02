@@ -1,0 +1,45 @@
+#include <stdio.h>   // printf
+#include <unistd.h>  // getpid
+
+void childProcess(void);
+void fatherProcess(int childpid);
+
+int op1=10, op2=20, ris;
+
+//------------------------------------------------------------------------------------------
+//=== Main =================================================================================
+//------------------------------------------------------------------------------------------
+int main() {
+
+  printf("\n[INIZIO] - Esiste solo il processo padre, il padre del padre e' la shell \n");
+  printf("[INIZIO] - Prima della fork - pid processo=%d, pid padre=%d\n",getpid(),getppid());
+
+  // Creazione del processo figlio
+  int pid=fork();
+  if (pid==0) {
+    // Esecuzione codice del processo figlio
+    childProcess();
+  } else if (pid>0) {
+    // Esecuzione codice del processo padre
+    fatherProcess(pid);
+  } else { // pid<0
+    // Errore
+    printf("Creazione del processo figlio fallita!\n");
+  }
+
+  // Codice comune a processo padre e figlio
+  printf("[FINE] - Termine del processo con pid=%d, ris=%d, padre=%d\n", getpid(), ris, getppid());
+}
+void childProcess(void)
+{
+  ris=op1+op2;
+  printf("\n[Figlio] - Il risultato della somma di op1+op2=%d\n", ris);
+  printf("[Figlio] - pid=%d, pid padre=%d\n", getpid(), getppid());
+}
+
+void fatherProcess(int childpid)
+{
+  ris=op1*op2;
+  printf("\n[Padre] - pid=%d, pid padre=%d, pid figlio=%d\n", getpid(), getppid(), childpid);
+  printf("[Padre] - Il risultato della moltiplicazione di op1*op2=%d\n", ris);
+}
